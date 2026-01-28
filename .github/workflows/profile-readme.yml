@@ -1,0 +1,46 @@
+name: Sync README from forgejo to github format.
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-profile-readme:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Move README into profile folder and update asset path
+        shell: bash
+        run: |
+          set -euo pipefail
+          profile_dir="profile"
+          profile_readme="$profile_dir/README.md"
+
+          if [ -f README.md ]; then
+            mkdir -p "$profile_dir"
+            mv README.md "$profile_readme"
+          fi
+
+          if [ -f "$profile_readme" ]; then
+            sed -i 's|assets/volumix.svg|../assets/volumix.svg|g' "$profile_readme"
+          fi
+
+      - name: Commit and push if changed
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "$(git status --porcelain)" ]; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add -A
+            git commit -m "Move README into profile folder"
+            git push
+          fi
