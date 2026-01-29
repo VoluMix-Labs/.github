@@ -1,6 +1,6 @@
 
 <p align="center" style="color:white;">
-  <img src="assets/volumix.svg" width="220">
+  <img src="../assets/volumix.svg" width="220">
 </p>
 
 <p align="center">
